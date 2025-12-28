@@ -1,0 +1,22 @@
+// Mobile vs Desktop comparison note
+export function renderStrategyNote(strategy) {
+  return `
+    <div class="bg-blue-50 rounded-xl p-4 mb-6">
+      <p class="text-xs text-blue-700">
+        <strong>Testing Strategy:</strong> ${
+          strategy === "mobile" ? "📱 Mobile" : "💻 Desktop"
+        } • 
+        This report shows performance metrics from a ${
+          strategy === "mobile"
+            ? "simulated mobile device (Moto G4)"
+            : "desktop environment"
+        }.
+        ${
+          strategy === "mobile"
+            ? "Mobile users experience different network conditions and device capabilities."
+            : "Desktop users typically have faster connections and more powerful hardware."
+        }
+      </p>
+    </div>
+  `;
+}
