@@ -1,0 +1,10 @@
+{
+  "type": "module",
+  "name": "speed-test",
+  "version": "1.0.0",
+  "dependencies": {
+    "express": "^4.19.0",
+    "lighthouse": "^11.7.0",
+    "chrome-launcher": "^1.1.0"
+  }
+}
