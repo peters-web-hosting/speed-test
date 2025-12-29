@@ -21,13 +21,13 @@ export function renderPerformanceInsights(performanceScore) {
   }
 
   return `
-    <div class="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl shadow-sm p-6 mb-6">
-      <h3 class="text-lg font-semibold mb-2">📊 Performance Analysis</h3>
+    <div class="bg-orange-50 rounded-lg shadow-sm p-6 mb-6 border border-orange-100">
+      <h3 class="text-lg font-bold text-accent mb-2">📊 Performance Analysis</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <p class="text-sm text-gray-600 mb-2">Overall Performance Rating</p>
-          <p class="text-2xl font-bold text-indigo-600">${description}</p>
-          <p class="text-xs text-gray-500 mt-2">Score: ${performanceScore}/100</p>
+          <p class="text-2xl font-bold text-primary">${description}</p>
+          <p class="text-xs text-gray-600 mt-2">Score: ${performanceScore}/100</p>
         </div>
         <div>
           <p class="text-sm text-gray-600 mb-2">Recommendation</p>

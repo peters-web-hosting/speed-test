@@ -29,9 +29,9 @@ export function renderScoreRing(score, label) {
 
 export function renderScoresOverview(metrics) {
   return `
-    <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
-      <h3 class="text-lg font-semibold mb-4">Overall Scores</h3>
-      <div id="scoreRings" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-6 border border-gray-100">
+      <h3 class="text-lg font-bold text-accent mb-6">Overall Scores</h3>
+      <div id="scoreRings" class="grid grid-cols-2 md:grid-cols-4 gap-6">
         ${renderScoreRing(metrics.performance, "Performance")}
         ${renderScoreRing(metrics.accessibility, "Accessibility")}
         ${renderScoreRing(metrics.bestPractices, "Best Practices")}
