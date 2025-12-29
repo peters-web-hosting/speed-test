@@ -281,7 +281,7 @@ function renderResults(url, metrics, opportunities, strategy) {
   const bestPracticesDetails = renderBestPracticesDetails(
     metrics.bestPractices
   );
-  const seoMetrics = renderSEOMetrics(metrics.seo);
+  const seoMetrics = renderSEOMetrics(metrics.seo, metrics.seoDetails);
   const oppsSection = renderOpportunitiesSection(opportunities);
   const recommendations = renderRecommendationsSection(metrics);
   const screenshot = renderPageScreenshot(metrics.screenshot);

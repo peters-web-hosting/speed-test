@@ -138,6 +138,66 @@ export function extractMetrics(data) {
 
     // Screenshot
     screenshot: audits["final-screenshot"]?.details?.data || null,
+    // SEO details: extract common SEO audit results for a concise checklist
+    seoDetails: (function () {
+      const get = (key) => audits[key];
+      const present = (k) => !!get(k);
+
+      const documentTitle = get("document-title");
+      const metaDescription = get("meta-description");
+      const viewport = get("viewport");
+      const robotsTxt = get("robots-txt");
+      const canonical = get("canonical");
+      const hreflang = get("hreflang");
+      const imageAlt = get("image-alt");
+      const linkText = get("link-text");
+      const structuredData = get("structured-data");
+
+      return {
+        documentTitle: {
+          score: documentTitle?.score ?? null,
+          description: documentTitle?.description ?? "",
+        },
+        metaDescription: {
+          score: metaDescription?.score ?? null,
+          description: metaDescription?.description ?? "",
+        },
+        viewport: {
+          score: viewport?.score ?? null,
+          description: viewport?.description ?? "",
+        },
+        robotsTxt: {
+          score: robotsTxt?.score ?? null,
+          description: robotsTxt?.description ?? "",
+        },
+        canonical: {
+          score: canonical?.score ?? null,
+          description: canonical?.description ?? "",
+        },
+        hreflang: {
+          score: hreflang?.score ?? null,
+          description: hreflang?.description ?? "",
+        },
+        imageAlt: {
+          score: imageAlt?.score ?? null,
+          missing: imageAlt?.details?.items ? imageAlt.details.items.length : 0,
+          description: imageAlt?.description ?? "",
+        },
+        linkText: {
+          score: linkText?.score ?? null,
+          missing: linkText?.details?.items ? linkText.details.items.length : 0,
+          description: linkText?.description ?? "",
+        },
+        structuredData: {
+          score: structuredData?.score ?? null,
+          description: structuredData?.description ?? "",
+        },
+        // A quick summary flag to indicate if SEO category is mostly healthy
+        summary: {
+          score: Math.round(categories.seo?.score * 100) || 0,
+        },
+      };
+    })(),
   };
 }
 

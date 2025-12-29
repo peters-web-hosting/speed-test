@@ -28,14 +28,18 @@ export function renderResultsHeader(url, strategy) {
                 strategy === "mobile"
                   ? "bg-primary text-white shadow-sm"
                   : "border-2 border-primary text-primary hover:bg-orange-50"
-              }" style="${strategy === 'mobile' ? 'background-color: #FF8C42;' : ''}">
+              }" style="${
+    strategy === "mobile" ? "background-color: #FF8C42;" : ""
+  }">
                 📱 Mobile
               </button>
               <button id="switchDesktopBtn" title="Show Desktop results (cached or fetched)" aria-label="Show Desktop results" class="px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
                 strategy === "desktop"
                   ? "bg-primary text-white shadow-sm"
                   : "border-2 border-primary text-primary hover:bg-orange-50"
-              }" style="${strategy === 'desktop' ? 'background-color: #FF8C42;' : ''}">
+              }" style="${
+    strategy === "desktop" ? "background-color: #FF8C42;" : ""
+  }">
                 💻 Desktop
               </button>
             </div>
