@@ -34,7 +34,6 @@ export async function fetchPageSpeedData(url, strategy) {
     }
     throw new Error(data.error.message);
   }
-  console.log("PageSpeed Insights data:", data);
 
   return data;
 }
