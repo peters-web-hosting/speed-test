@@ -45,6 +45,14 @@ export function renderResultsHeader(url, strategy) {
             </div>
             <p class="text-xs text-gray-500 mt-2">Click a device to view its results — cached results show instantly; otherwise a new test will run.</p>
           </div>
+          <div class="flex gap-2">
+            <button id="historyBtn" title="Open test history" aria-label="Open test history" class="border-2 border-primary text-primary hover:bg-orange-50 px-4 py-2 rounded-lg text-sm font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-primary">
+              📚 History
+            </button>
+            <button id="compareBtn" title="Compare Mobile vs Desktop" aria-label="Compare Mobile vs Desktop" class="border-2 border-primary text-primary hover:bg-orange-50 px-4 py-2 rounded-lg text-sm font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-primary">
+              🔁 Compare
+            </button>
+          </div>
           <button onclick="location.reload()" class="border-2 border-secondary text-secondary hover:bg-orange-50 px-6 py-2 rounded-lg text-sm font-semibold transition-all">
             ↻ New Test
           </button>

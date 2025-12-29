@@ -29,7 +29,7 @@ function getRandomTip() {
 
 export function renderForm() {
   return `
-    <form id="testForm" class="bg-white rounded-xl shadow-lg p-8 space-y-6 border border-orange-100">
+    <form id="testForm" role="form" aria-label="Website performance test form" aria-describedby="formHelp" class="bg-white rounded-xl shadow-lg p-8 space-y-6 border border-orange-100">
       <div class="mb-2">
         <h2 class="text-2xl font-bold text-accent">Test Your Website Performance</h2>
         <p class="text-gray-600 text-sm mt-1">Enter your website URL and select a device type to analyze</p>
@@ -38,19 +38,20 @@ export function renderForm() {
         <label class="block">
           <span class="text-sm font-semibold text-accent">Website URL</span>
           <input id="url" type="url" required placeholder="https://example.com"
-                 class="mt-2 w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none transition-all"/>
+                 aria-label="Website URL to test" class="mt-2 w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none transition-all"/>
         </label>
         <label class="block">
           <span class="text-sm font-semibold text-accent">Test Device</span>
-          <select id="strategy" class="mt-2 w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none transition-all bg-white cursor-pointer">
+          <select id="strategy" aria-label="Test device type" class="mt-2 w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none transition-all bg-white cursor-pointer">
             <option value="mobile">📱 Mobile</option>
             <option value="desktop">💻 Desktop</option>
           </select>
         </label>
       </div>
-      <button type="submit" class="w-full bg-primary hover:bg-orange-500 text-black px-8 py-4 rounded-lg transition-all font-semibold text-lg shadow-md hover:shadow-lg">
+      <button id="runTestBtn" type="submit" aria-label="Run performance test" class="w-full bg-primary hover:bg-orange-500 text-black px-8 py-4 rounded-lg transition-all font-semibold text-lg shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary">
         🚀 Run Performance Test
       </button>
+      <p id="formHelp" class="sr-only">Enter the full URL including https:// and choose a device type, then press Run Performance Test to start the audit.</p>
       <div class="flex items-center justify-around pt-4 border-t border-gray-200 text-xs text-gray-600">
         <div class="flex items-center gap-2">✔️ <span>Instant Results</span></div>
         <div class="flex items-center gap-2">✔️ <span>Comprehensive Analysis</span></div>
