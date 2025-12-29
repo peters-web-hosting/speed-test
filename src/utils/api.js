@@ -64,7 +64,66 @@ export function extractMetrics(data) {
 
     // Page stats
     totalSize: audits["total-byte-weight"]?.numericValue || 0,
-    domSize: audits["dom-size"]?.numericValue || 0,
+    domSize: (() => {
+      const domAudit = audits["dom-size"];
+      if (domAudit) {
+        if (typeof domAudit.numericValue === "number")
+          return domAudit.numericValue;
+        if (domAudit.details?.overallDomCount)
+          return domAudit.details.overallDomCount;
+        if (Array.isArray(domAudit.details?.items)) {
+          for (const it of domAudit.details.items) {
+            const candidateKeys = ["value", "count", "nodes", "total", "size"];
+            for (const k of candidateKeys) {
+              if (typeof it[k] === "number" && !Number.isNaN(it[k]))
+                return it[k];
+            }
+            if (
+              it.statistic &&
+              typeof it.statistic === "object" &&
+              typeof it.statistic.value === "number"
+            )
+              return it.statistic.value;
+            if (
+              typeof it.statistic === "string" &&
+              !Number.isNaN(Number(it.statistic))
+            )
+              return Number(it.statistic);
+          }
+        }
+      }
+
+      // Fallback: many PSI responses include a fullPageScreenshot with nodes
+      const fps =
+        data.lighthouseResult?.fullPageScreenshot ||
+        data.lighthouseResult?.full_page_screenshot ||
+        data.fullPageScreenshot;
+      if (fps) {
+        const nodes = fps.nodes || fps.screenshot?.nodes || null;
+        if (Array.isArray(nodes)) return nodes.length;
+        if (nodes && typeof nodes === "object")
+          return Object.keys(nodes).length;
+        if (typeof fps.total === "number") return fps.total;
+        if (typeof fps.nodeCount === "number") return fps.nodeCount;
+      }
+
+      // Another fallback: check for nodes in a 'full-page-screenshot' audit details
+      const fpsAudit = audits["full-page-screenshot"];
+      if (fpsAudit?.details?.nodes && Array.isArray(fpsAudit.details.nodes))
+        return fpsAudit.details.nodes.length;
+      if (fpsAudit?.details?.items && Array.isArray(fpsAudit.details.items))
+        return fpsAudit.details.items.length;
+
+      try {
+        console.log(
+          "dom-size not found; domAudit:",
+          domAudit,
+          "fullPageScreenshot:",
+          fps
+        );
+      } catch (e) {}
+      return 0;
+    })(),
     requestCount: audits["network-requests"]?.details?.items?.length || 0,
     jsTime: audits["mainthread-work-breakdown"]?.numericValue || 0,
     unusedCSS: audits["unused-css-rules"]?.details?.overallSavingsBytes || 0,

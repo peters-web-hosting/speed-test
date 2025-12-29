@@ -7,15 +7,15 @@ export function renderThirdPartyImpact(thirdPartyData) {
   }
 
   return `
-    <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
-      <h3 class="text-lg font-semibold mb-4">Third-Party Impact</h3>
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-6 border border-gray-100">
+      <h3 class="text-lg font-bold text-accent mb-4">Third-Party Impact</h3>
       <div class="space-y-2">
         ${thirdPartyData
           .slice(0, 5)
           .map(
             (tp) => `
-          <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-            <span class="text-sm font-medium">${tp.entity}</span>
+          <div class="flex justify-between items-center p-3 bg-orange-50 rounded-lg">
+            <span class="text-sm font-medium text-gray-900">${tp.entity}</span>
             <div class="text-right">
               <span class="text-sm font-semibold">${formatTime(
                 tp.mainThreadTime

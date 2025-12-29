@@ -4,7 +4,7 @@ import { metricColor } from "../utils/colors.js";
 
 function renderMetricCard(title, value, explanation, colorClass) {
   return `
-    <div class="bg-white p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+    <div class="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-100">
       <div class="inline-block px-2 py-1 rounded-full text-xs font-medium mb-2 ${colorClass}">
         ${
           colorClass.includes("green")
@@ -14,17 +14,17 @@ function renderMetricCard(title, value, explanation, colorClass) {
             : "Poor"
         }
       </div>
-      <p class="text-sm text-slate-500">${title}</p>
-      <p class="text-2xl font-bold">${value}</p>
-      <p class="text-xs text-slate-600 mt-1">${explanation}</p>
+      <p class="text-sm text-gray-600">${title}</p>
+      <p class="text-2xl font-bold text-accent">${value}</p>
+      <p class="text-xs text-gray-600 mt-1">${explanation}</p>
     </div>
   `;
 }
 
 export function renderPerformanceMetrics(metrics) {
   return `
-    <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
-      <h3 class="text-lg font-semibold mb-4">Performance Metrics</h3>
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-6 border border-gray-100">
+      <h3 class="text-lg font-bold text-accent mb-4">Performance Metrics</h3>
       <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
         ${renderMetricCard(
           "Time to First Byte",

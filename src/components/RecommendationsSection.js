@@ -3,9 +3,9 @@ import { formatBytes } from "../utils/formatters.js";
 
 export function renderRecommendationsSection(metrics) {
   return `
-    <div class="bg-blue-50 rounded-xl shadow-sm p-6 mb-6">
-      <h3 class="text-lg font-semibold mb-4">📋 Quick Recommendations</h3>
-      <ul class="space-y-2 text-sm">
+    <div class="bg-orange-50 rounded-lg shadow-sm p-6 mb-6 border border-orange-100">
+      <h3 class="text-lg font-bold text-accent mb-4">📋 Quick Recommendations</h3>
+      <ul class="space-y-2 text-sm text-gray-700">
         ${
           metrics.lcp > 2500
             ? "<li>• <strong>Optimize LCP:</strong> Consider lazy loading, optimizing server response, and using a CDN</li>"

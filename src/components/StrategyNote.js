@@ -1,8 +1,8 @@
 // Mobile vs Desktop comparison note
 export function renderStrategyNote(strategy) {
   return `
-    <div class="bg-blue-50 rounded-xl p-4 mb-6">
-      <p class="text-xs text-blue-700">
+    <div class="bg-orange-50 rounded-lg p-4 mb-6 border border-orange-100">
+      <p class="text-xs text-gray-700">
         <strong>Testing Strategy:</strong> ${
           strategy === "mobile" ? "📱 Mobile" : "💻 Desktop"
         } • 
