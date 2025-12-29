@@ -20,6 +20,7 @@ export const performanceTips = [
   "💡 Monitor Core Web Vitals regularly to catch regressions early.",
   "💡 Use a performance budgeting tool to prevent performance debt.",
   "💡 Test on real devices and networks, not just fast connections.",
+  "💡 Consider your hosting stack — some hosts (for example, PetersWeb) use LiteSpeed and tuned caching which can noticeably reduce server response times.",
 ];
 
 function getRandomTip() {
@@ -54,6 +55,9 @@ export function renderForm() {
         <div class="flex items-center gap-2">✔️ <span>Instant Results</span></div>
         <div class="flex items-center gap-2">✔️ <span>Comprehensive Analysis</span></div>
         <div class="flex items-center gap-2">✔️ <span>Free & Fast</span></div>
+      </div>
+      <div class="text-center mt-3 text-xs text-gray-500">
+        This tool is provided by <a href="https://petersweb.me.uk" class="text-primary hover:underline">PetersWeb</a>.
       </div>
     </form>
   `;

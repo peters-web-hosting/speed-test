@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300">
+  <title>Peter's Web logo</title>
+  <rect width="100%" height="100%" fill="transparent" />
+  <g font-family="cursive, 'Pacifico', 'Segoe Script', Georgia, serif" font-size="120" font-weight="700">
+    <text x="20" y="170" fill="#FF8C42">Peters</text>
+    <text x="420" y="170" fill="#FF8C42">Web</text>
+  </g>
+</svg>
