@@ -299,7 +299,9 @@ function _saveTestResult(url, metrics, opportunities, strategy) {
 
 function renderHistoryPanel() {
   const history = _readHistory();
-  const items = Object.values(history).sort((a, b) => b.lastUpdated - a.lastUpdated);
+  const items = Object.values(history).sort(
+    (a, b) => b.lastUpdated - a.lastUpdated
+  );
   if (items.length === 0) {
     resultsDiv.innerHTML = `<div class="bg-white rounded-lg p-6 shadow-sm">No history yet — run a test to save results.</div>`;
     return;
@@ -312,13 +314,19 @@ function renderHistoryPanel() {
         <div class="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm mb-3">
           <div>
             <p class="text-sm font-medium">${it.url}</p>
-            <p class="text-xs text-gray-500">Updated ${new Date(it.lastUpdated).toLocaleString()}</p>
+            <p class="text-xs text-gray-500">Updated ${new Date(
+              it.lastUpdated
+            ).toLocaleString()}</p>
           </div>
           <div class="flex items-center gap-2">
             <span class="text-xs">Mobile ${mobile}</span>
             <span class="text-xs">Desktop ${desktop}</span>
-            <button data-id="${it.id}" class="viewBtn border px-3 py-1 rounded bg-orange-50 text-primary text-sm">View</button>
-            <button data-id="${it.id}" class="copyLinkBtn border px-3 py-1 rounded text-sm">Copy link</button>
+            <button data-id="${
+              it.id
+            }" class="viewBtn border px-3 py-1 rounded bg-orange-50 text-primary text-sm">View</button>
+            <button data-id="${
+              it.id
+            }" class="copyLinkBtn border px-3 py-1 rounded text-sm">Copy link</button>
           </div>
         </div>`;
     })
@@ -337,8 +345,18 @@ function renderHistoryPanel() {
       const { metrics, opportunities } = entry.results[strat];
       // load into testResults and render
       testResults = {};
-      if (entry.results.mobile) testResults.mobile = { url: entry.url, metrics: entry.results.mobile.metrics, opportunities: entry.results.mobile.opportunities };
-      if (entry.results.desktop) testResults.desktop = { url: entry.url, metrics: entry.results.desktop.metrics, opportunities: entry.results.desktop.opportunities };
+      if (entry.results.mobile)
+        testResults.mobile = {
+          url: entry.url,
+          metrics: entry.results.mobile.metrics,
+          opportunities: entry.results.mobile.opportunities,
+        };
+      if (entry.results.desktop)
+        testResults.desktop = {
+          url: entry.url,
+          metrics: entry.results.desktop.metrics,
+          opportunities: entry.results.desktop.opportunities,
+        };
       renderResults(entry.url, metrics, opportunities, strat);
     });
   });
@@ -378,12 +396,21 @@ function loadSharedResultFromURL() {
   const strat = entry.results.mobile ? "mobile" : "desktop";
   const { metrics, opportunities } = entry.results[strat];
   testResults = {};
-  if (entry.results.mobile) testResults.mobile = { url: entry.url, metrics: entry.results.mobile.metrics, opportunities: entry.results.mobile.opportunities };
-  if (entry.results.desktop) testResults.desktop = { url: entry.url, metrics: entry.results.desktop.metrics, opportunities: entry.results.desktop.opportunities };
+  if (entry.results.mobile)
+    testResults.mobile = {
+      url: entry.url,
+      metrics: entry.results.mobile.metrics,
+      opportunities: entry.results.mobile.opportunities,
+    };
+  if (entry.results.desktop)
+    testResults.desktop = {
+      url: entry.url,
+      metrics: entry.results.desktop.metrics,
+      opportunities: entry.results.desktop.opportunities,
+    };
   renderResults(entry.url, metrics, opportunities, strat);
   return true;
 }
-
 
 // Show a side-by-side comparison if both strategies available for the same URL
 function showCompareForCurrentUrl(url, previousStrategy = "mobile") {
@@ -429,7 +456,8 @@ function showCompareForCurrentUrl(url, previousStrategy = "mobile") {
   if (closeBtn) {
     closeBtn.addEventListener("click", () => {
       // prefer the provided previousStrategy, fallback to mobile
-      const strat = previousStrategy || (entry.results.mobile ? "mobile" : "desktop");
+      const strat =
+        previousStrategy || (entry.results.mobile ? "mobile" : "desktop");
       const res = entry.results[strat];
       if (!res) {
         // if the requested strategy isn't available, pick any available
@@ -503,13 +531,14 @@ function renderResults(url, metrics, opportunities, strategy) {
   const desktopBtn = document.getElementById("switchDesktopBtn");
 
   // attach export and compare handlers
- 
+
   const compareBtn = document.getElementById("compareBtn");
   const historyBtn = document.getElementById("historyBtn");
 
- 
-  if (compareBtn) compareBtn.addEventListener("click", () => showCompareForCurrentUrl(url));
-  if (historyBtn) historyBtn.addEventListener("click", () => renderHistoryPanel());
+  if (compareBtn)
+    compareBtn.addEventListener("click", () => showCompareForCurrentUrl(url));
+  if (historyBtn)
+    historyBtn.addEventListener("click", () => renderHistoryPanel());
 
   if (mobileBtn) {
     mobileBtn.addEventListener("click", () => switchStrategy("mobile"));
