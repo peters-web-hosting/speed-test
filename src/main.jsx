@@ -95,6 +95,11 @@ form.addEventListener("submit", async (e) => {
 
   const url = document.getElementById("url").value.trim();
   const strategy = document.getElementById("strategy").value;
+  // Collect selected categories
+  const categoryInputs = form.querySelectorAll(
+    'input[name="categories"]:checked'
+  );
+  const categories = Array.from(categoryInputs).map((el) => el.value);
   if (!url) return;
 
   form.classList.add("hidden");
@@ -105,14 +110,14 @@ form.addEventListener("submit", async (e) => {
   tipInterval = startTipRotation();
 
   try {
-    const data = await fetchPageSpeedData(url, strategy);
+    const data = await fetchPageSpeedData(url, strategy, categories);
     const metrics = extractMetrics(data);
     const opportunities = extractOpportunities(data.lighthouseResult.audits);
 
     // Store results for this strategy
-    testResults[strategy] = { url, metrics, opportunities };
+    testResults[strategy] = { url, metrics, opportunities, categories };
 
-    renderResults(url, metrics, opportunities, strategy);
+    renderResults(url, metrics, opportunities, strategy, categories);
 
     // Clear tip rotation interval when results are displayed
     if (tipInterval) {
@@ -470,14 +475,21 @@ function showCompareForCurrentUrl(url, previousStrategy = "mobile") {
   }
 }
 
-function renderResults(url, metrics, opportunities, strategy) {
+function renderResults(url, metrics, opportunities, strategy, categories) {
   loading.classList.add("hidden");
 
   // Build results HTML using components
   const header = renderResultsHeader(url, strategy);
   const strategyNote = renderStrategyNote(strategy);
-  const perfInsights = renderPerformanceInsights(metrics.performance);
-  const scores = renderScoresOverview(metrics);
+  // Only render sections for selected categories
+  categories =
+    Array.isArray(categories) && categories.length
+      ? categories
+      : ["performance", "accessibility", "best-practices", "seo"];
+  const perfInsights = categories.includes("performance")
+    ? renderPerformanceInsights(metrics.performance)
+    : "";
+  const scores = renderScoresOverview(metrics, categories);
   const metricsData = `<div id="metricsData" class="hidden" data-metrics='${JSON.stringify(
     metrics
   )}'></div>`;
@@ -487,19 +499,33 @@ function renderResults(url, metrics, opportunities, strategy) {
           opportunities
         )}'></div>`
       : "";
-  const coreWebVitals = renderCoreWebVitals(metrics);
-  const perfMetrics = renderPerformanceMetrics(metrics);
-  const diagnostics = renderDiagnosticsSummary(metrics);
-  const stats = renderPageStatistics(metrics);
-  const resourceBreakdown = renderResourceBreakdown(metrics);
-  const thirdParty = renderThirdPartyImpact(metrics.thirdParty);
-  const accessibilityDetails = renderAccessibilityDetails(
-    metrics.accessibility
-  );
-  const bestPracticesDetails = renderBestPracticesDetails(
-    metrics.bestPractices
-  );
-  const seoMetrics = renderSEOMetrics(metrics.seo, metrics.seoDetails);
+  const coreWebVitals = categories.includes("performance")
+    ? renderCoreWebVitals(metrics)
+    : "";
+  const perfMetrics = categories.includes("performance")
+    ? renderPerformanceMetrics(metrics)
+    : "";
+  const diagnostics = categories.includes("performance")
+    ? renderDiagnosticsSummary(metrics)
+    : "";
+  const stats = categories.includes("performance")
+    ? renderPageStatistics(metrics)
+    : "";
+  const resourceBreakdown = categories.includes("performance")
+    ? renderResourceBreakdown(metrics)
+    : "";
+  const thirdParty = categories.includes("performance")
+    ? renderThirdPartyImpact(metrics.thirdParty)
+    : "";
+  const accessibilityDetails = categories.includes("accessibility")
+    ? renderAccessibilityDetails(metrics.accessibility)
+    : "";
+  const bestPracticesDetails = categories.includes("best-practices")
+    ? renderBestPracticesDetails(metrics.bestPractices)
+    : "";
+  const seoMetrics = categories.includes("seo")
+    ? renderSEOMetrics(metrics.seo, metrics.seoDetails)
+    : "";
   const oppsSection = renderOpportunitiesSection(opportunities);
   const recommendations = renderRecommendationsSection(metrics);
   const screenshot = renderPageScreenshot(metrics.screenshot);
