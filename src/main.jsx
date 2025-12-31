@@ -369,7 +369,6 @@ function renderHistoryPanel() {
       if (!entry) return;
       // Prefer mobile if available, else desktop
       const strat = entry.results.mobile ? "mobile" : "desktop";
-      const urlParam = encodeURIComponent(entry.url);
       const url = new URL(location.origin + location.pathname);
       url.searchParams.set("url", entry.url);
       url.searchParams.set("strategy", strat);
