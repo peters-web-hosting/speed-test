@@ -27,15 +27,25 @@ export function renderScoreRing(score, label) {
   `;
 }
 
-export function renderScoresOverview(metrics) {
+export function renderScoresOverview(metrics, categories) {
+  categories =
+    Array.isArray(categories) && categories.length
+      ? categories
+      : ["performance", "accessibility", "best-practices", "seo"];
+  const rings = [];
+  if (categories.includes("performance"))
+    rings.push(renderScoreRing(metrics.performance, "Performance"));
+  if (categories.includes("accessibility"))
+    rings.push(renderScoreRing(metrics.accessibility, "Accessibility"));
+  if (categories.includes("best-practices"))
+    rings.push(renderScoreRing(metrics.bestPractices, "Best Practices"));
+  if (categories.includes("seo"))
+    rings.push(renderScoreRing(metrics.seo, "SEO"));
   return `
     <div class="bg-white rounded-lg shadow-sm p-6 mb-6 border border-gray-100">
       <h3 class="text-lg font-bold text-accent mb-6">Overall Scores</h3>
       <div id="scoreRings" class="grid grid-cols-2 md:grid-cols-4 gap-6">
-        ${renderScoreRing(metrics.performance, "Performance")}
-        ${renderScoreRing(metrics.accessibility, "Accessibility")}
-        ${renderScoreRing(metrics.bestPractices, "Best Practices")}
-        ${renderScoreRing(metrics.seo, "SEO")}
+        ${rings.join("\n")}
       </div>
     </div>
   `;

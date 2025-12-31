@@ -10,6 +10,7 @@
     "generate-og": "node scripts/convert-og.js"
   },
   "devDependencies": {
+    "rollup-plugin-visualizer": "^6.0.5",
     "vite": "^7.2.4"
   },
   "dependencies": {

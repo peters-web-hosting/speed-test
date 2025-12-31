@@ -12,16 +12,48 @@ export function validateApiKey() {
   return true;
 }
 
-export async function fetchPageSpeedData(url, strategy) {
+/**
+ * Fetch PageSpeed data for a URL and strategy, with customizable categories.
+ * @param {string} url
+ * @param {string} strategy
+ * @param {string[]} [categories] - Array of categories to test (e.g. ['performance','accessibility'])
+ */
+export async function fetchPageSpeedData(url, strategy, categories) {
   if (!API_KEY) {
     throw new Error(
       "API key not configured. Please set up the VITE_PAGESPEED_API_KEY environment variable."
     );
   }
 
+  // --- Simple in-memory rate limiting ---
+  // Allow max 5 requests per 60 seconds (per browser session)
+  if (!window.__rateLimit) {
+    window.__rateLimit = { timestamps: [] };
+  }
+  const now = Date.now();
+  // Remove timestamps older than 60 seconds
+  window.__rateLimit.timestamps = window.__rateLimit.timestamps.filter(
+    (ts) => now - ts < 60000
+  );
+  if (window.__rateLimit.timestamps.length >= 5) {
+    throw new Error(
+      "Rate limit exceeded: Please wait before making more requests."
+    );
+  }
+  window.__rateLimit.timestamps.push(now);
+  // --- End rate limiting ---
+
+  // Use selected categories or default to all
+  const cats =
+    Array.isArray(categories) && categories.length
+      ? categories
+      : ["performance", "accessibility", "best-practices", "seo"];
+  const categoryParams = cats
+    .map((cat) => `category=${encodeURIComponent(cat)}`)
+    .join("&");
   const psiUrl = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(
     url
-  )}&strategy=${strategy}&category=performance&category=accessibility&category=best-practices&category=seo&key=${API_KEY}`;
+  )}&strategy=${strategy}&${categoryParams}&key=${API_KEY}`;
 
   const res = await fetch(psiUrl);
   const data = await res.json();
