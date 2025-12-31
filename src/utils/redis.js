@@ -13,8 +13,18 @@ async function ensureTable() {
   )`;
 }
 
+
+// Helper: delete entries older than 7 days
+async function deleteOldEntries() {
+  const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  await sql`DELETE FROM history WHERE (data->>'created')::bigint < ${sevenDaysAgo}`;
+}
+
 export async function setHistory(id, data) {
   await ensureTable();
+  await deleteOldEntries();
+  // Ensure created timestamp
+  if (!data.created) data.created = Date.now();
   await sql`
     INSERT INTO history (id, data)
     VALUES (${id}, ${JSON.stringify(data)})
@@ -22,8 +32,10 @@ export async function setHistory(id, data) {
   `;
 }
 
+
 export async function getHistory(id) {
   await ensureTable();
+  await deleteOldEntries();
   const rows = await sql`SELECT data FROM history WHERE id = ${id}`;
   return rows[0]?.data || null;
 }

@@ -273,27 +273,28 @@ async function _saveTestResult(url, metrics, opportunities, strategy) {
     entry.results[strategy] = { metrics, opportunities, ts: now };
     entry.lastUpdated = now;
   } else {
-    entry = {
-      id,
-      url,
-      created: now,
-      lastUpdated: now,
-      results: {
-        [strategy]: { metrics, opportunities, ts: now },
-      },
-    };
-  }
-  await fetch("/api/history", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ id, data: entry }),
-  });
-  return id;
-}
 
-async function _findEntryByUrl(url) {
-  // Since we use btoa(url) as id, try to fetch by id
-  const id = `${btoa(url).replace(/=+$/, "")}`;
+    if (!entry || !entry.results) {
+      resultsDiv.innerHTML = `<div class="bg-white rounded-lg p-6 shadow-sm">No history yet — run a test to save results.</div>`;
+      return;
+    }
+    const mobile = entry.results.mobile ? "✅" : "—";
+    const desktop = entry.results.desktop ? "✅" : "—";
+    const listHtml = `
+      <div class="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm mb-3">
+        <div>
+          <p class="text-sm font-medium">${entry.url}</p>
+          <p class="text-xs text-gray-500">Updated ${new Date(entry.lastUpdated).toLocaleString()}</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs">Mobile ${mobile}</span>
+          <span class="text-xs">Desktop ${desktop}</span>
+          <button data-id="${entry.id}" class="viewBtn border px-3 py-1 rounded bg-orange-50 text-primary text-sm">View</button>
+          <button data-id="${entry.id}" class="copyLinkBtn border px-3 py-1 rounded text-sm">Copy link</button>
+        </div>
+      </div>`;
+
+    resultsDiv.innerHTML = `<div class="mb-4"><h3 class="text-lg font-bold mb-3">Test History</h3>${listHtml}</div>`;
   return await _getHistoryById(id);
 }
 
@@ -333,12 +334,20 @@ async function renderHistoryPanel() {
 
   resultsDiv.innerHTML = `<div class="mb-4"><h3 class="text-lg font-bold mb-3">Test History</h3>${listHtml}</div>`;
 
+
   document.querySelectorAll(".viewBtn").forEach((btn) => {
     btn.addEventListener("click", async () => {
       const id = btn.getAttribute("data-id");
       const entry = await _getHistoryById(id);
-      if (!entry) return;
+      if (!entry || !entry.results) {
+        alert("No results found for this entry (may have expired or been deleted).");
+        return;
+      }
       const strat = entry.results.mobile ? "mobile" : "desktop";
+      if (!entry.results[strat]) {
+        alert("No results found for this strategy.");
+        return;
+      }
       const { metrics, opportunities } = entry.results[strat];
       testResults = {};
       if (entry.results.mobile)
@@ -399,9 +408,10 @@ async function loadSharedResultFromURL() {
 }
 
 // Show a side-by-side comparison if both strategies available for the same URL
-function showCompareForCurrentUrl(url, previousStrategy = "mobile") {
-  const entry = _findEntryByUrl(url);
-  if (!entry) {
+
+async function showCompareForCurrentUrl(url, previousStrategy = "mobile") {
+  const entry = await _findEntryByUrl(url);
+  if (!entry || !entry.results) {
     alert("No saved results to compare for this URL.");
     return;
   }
