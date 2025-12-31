@@ -299,7 +299,9 @@ function _saveTestResult(url, metrics, opportunities, strategy) {
 
 function renderHistoryPanel() {
   const history = _readHistory();
-  const items = Object.values(history).sort((a, b) => b.lastUpdated - a.lastUpdated);
+  const items = Object.values(history).sort(
+    (a, b) => b.lastUpdated - a.lastUpdated
+  );
   if (items.length === 0) {
     resultsDiv.innerHTML = `<div class="bg-white rounded-lg p-6 shadow-sm">No history yet — run a test to save results.</div>`;
     return;
@@ -312,13 +314,19 @@ function renderHistoryPanel() {
         <div class="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm mb-3">
           <div>
             <p class="text-sm font-medium">${it.url}</p>
-            <p class="text-xs text-gray-500">Updated ${new Date(it.lastUpdated).toLocaleString()}</p>
+            <p class="text-xs text-gray-500">Updated ${new Date(
+              it.lastUpdated
+            ).toLocaleString()}</p>
           </div>
           <div class="flex items-center gap-2">
             <span class="text-xs">Mobile ${mobile}</span>
             <span class="text-xs">Desktop ${desktop}</span>
-            <button data-id="${it.id}" class="viewBtn border px-3 py-1 rounded bg-orange-50 text-primary text-sm">View</button>
-            <button data-id="${it.id}" class="copyLinkBtn border px-3 py-1 rounded text-sm">Copy link</button>
+            <button data-id="${
+              it.id
+            }" class="viewBtn border px-3 py-1 rounded bg-orange-50 text-primary text-sm">View</button>
+            <button data-id="${
+              it.id
+            }" class="copyLinkBtn border px-3 py-1 rounded text-sm">Copy link</button>
           </div>
         </div>`;
     })
@@ -337,8 +345,18 @@ function renderHistoryPanel() {
       const { metrics, opportunities } = entry.results[strat];
       // load into testResults and render
       testResults = {};
-      if (entry.results.mobile) testResults.mobile = { url: entry.url, metrics: entry.results.mobile.metrics, opportunities: entry.results.mobile.opportunities };
-      if (entry.results.desktop) testResults.desktop = { url: entry.url, metrics: entry.results.desktop.metrics, opportunities: entry.results.desktop.opportunities };
+      if (entry.results.mobile)
+        testResults.mobile = {
+          url: entry.url,
+          metrics: entry.results.mobile.metrics,
+          opportunities: entry.results.mobile.opportunities,
+        };
+      if (entry.results.desktop)
+        testResults.desktop = {
+          url: entry.url,
+          metrics: entry.results.desktop.metrics,
+          opportunities: entry.results.desktop.opportunities,
+        };
       renderResults(entry.url, metrics, opportunities, strat);
     });
   });
@@ -346,8 +364,15 @@ function renderHistoryPanel() {
   document.querySelectorAll(".copyLinkBtn").forEach((btn) => {
     btn.addEventListener("click", async () => {
       const id = btn.getAttribute("data-id");
-      const url = new URL(location.href);
-      url.searchParams.set("resultId", id);
+      const history = _readHistory();
+      const entry = history[id];
+      if (!entry) return;
+      // Prefer mobile if available, else desktop
+      const strat = entry.results.mobile ? "mobile" : "desktop";
+      const url = new URL(location.origin + location.pathname);
+      url.searchParams.set("url", entry.url);
+      url.searchParams.set("strategy", strat);
+      url.searchParams.set("autorun", "1");
       try {
         await navigator.clipboard.writeText(url.toString());
         btn.textContent = "Copied";
@@ -370,12 +395,21 @@ function loadSharedResultFromURL() {
   const strat = entry.results.mobile ? "mobile" : "desktop";
   const { metrics, opportunities } = entry.results[strat];
   testResults = {};
-  if (entry.results.mobile) testResults.mobile = { url: entry.url, metrics: entry.results.mobile.metrics, opportunities: entry.results.mobile.opportunities };
-  if (entry.results.desktop) testResults.desktop = { url: entry.url, metrics: entry.results.desktop.metrics, opportunities: entry.results.desktop.opportunities };
+  if (entry.results.mobile)
+    testResults.mobile = {
+      url: entry.url,
+      metrics: entry.results.mobile.metrics,
+      opportunities: entry.results.mobile.opportunities,
+    };
+  if (entry.results.desktop)
+    testResults.desktop = {
+      url: entry.url,
+      metrics: entry.results.desktop.metrics,
+      opportunities: entry.results.desktop.opportunities,
+    };
   renderResults(entry.url, metrics, opportunities, strat);
   return true;
 }
-
 
 // Show a side-by-side comparison if both strategies available for the same URL
 function showCompareForCurrentUrl(url, previousStrategy = "mobile") {
@@ -421,7 +455,8 @@ function showCompareForCurrentUrl(url, previousStrategy = "mobile") {
   if (closeBtn) {
     closeBtn.addEventListener("click", () => {
       // prefer the provided previousStrategy, fallback to mobile
-      const strat = previousStrategy || (entry.results.mobile ? "mobile" : "desktop");
+      const strat =
+        previousStrategy || (entry.results.mobile ? "mobile" : "desktop");
       const res = entry.results[strat];
       if (!res) {
         // if the requested strategy isn't available, pick any available
@@ -495,13 +530,14 @@ function renderResults(url, metrics, opportunities, strategy) {
   const desktopBtn = document.getElementById("switchDesktopBtn");
 
   // attach export and compare handlers
- 
+
   const compareBtn = document.getElementById("compareBtn");
   const historyBtn = document.getElementById("historyBtn");
 
- 
-  if (compareBtn) compareBtn.addEventListener("click", () => showCompareForCurrentUrl(url));
-  if (historyBtn) historyBtn.addEventListener("click", () => renderHistoryPanel());
+  if (compareBtn)
+    compareBtn.addEventListener("click", () => showCompareForCurrentUrl(url));
+  if (historyBtn)
+    historyBtn.addEventListener("click", () => renderHistoryPanel());
 
   if (mobileBtn) {
     mobileBtn.addEventListener("click", () => switchStrategy("mobile"));
@@ -517,6 +553,30 @@ function renderResults(url, metrics, opportunities, strategy) {
 }
 
 // On load, if a shared resultId is present, load it
+
+// Auto-run test if url, strategy, and autorun=1 are present in query params
+function tryAutoRunFromQuery() {
+  const params = new URLSearchParams(location.search);
+  const url = params.get("url");
+  const strategy = params.get("strategy") || "mobile";
+  const autorun = params.get("autorun");
+  if (url && autorun === "1") {
+    // Fill form fields
+    const urlInput = document.getElementById("url");
+    const stratInput = document.getElementById("strategy");
+    if (urlInput) urlInput.value = url;
+    if (stratInput) stratInput.value = strategy;
+    // Submit the form programmatically
+    setTimeout(() => {
+      document.getElementById("runTestBtn")?.click();
+    }, 300);
+    return true;
+  }
+  return false;
+}
+
 if (!loadSharedResultFromURL()) {
-  // no shared result; optionally render history on initial page
+  if (!tryAutoRunFromQuery()) {
+    // no shared result or autorun; optionally render history on initial page
+  }
 }
