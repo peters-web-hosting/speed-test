@@ -1,9 +1,3 @@
-// Add this export to fix import error
-export function renderResults(url, metrics, opportunities, strategy) {
-  // This should be implemented with the actual rendering logic from the previous main.jsx
-  // For now, it's a stub to resolve the import error.
-  // TODO: Move the real renderResults logic here.
-}
 // src/render.js
 // Handles all rendering logic for results and initial UI
 import {
@@ -11,6 +5,22 @@ import {
   renderLoadingState,
   performanceTips,
 } from "./components/Form.js";
+import { renderResultsHeader } from "./components/ResultsHeader.js";
+import { renderScoresOverview } from "./components/ScoresOverview.js";
+import { renderCoreWebVitals } from "./components/CoreWebVitals.js";
+import { renderPerformanceMetrics } from "./components/PerformanceMetrics.js";
+import { renderPageStatistics } from "./components/PageStatistics.js";
+import { renderThirdPartyImpact } from "./components/ThirdPartyImpact.js";
+import { renderOpportunitiesSection } from "./components/OpportunitiesSection.js";
+import { renderRecommendationsSection } from "./components/RecommendationsSection.js";
+import { renderPageScreenshot } from "./components/PageScreenshot.js";
+import { renderAccessibilityDetails } from "./components/AccessibilityDetails.js";
+import { renderSEOMetrics } from "./components/SEOMetrics.js";
+import { renderBestPracticesDetails } from "./components/BestPracticesDetails.js";
+import { renderResourceBreakdown } from "./components/ResourceBreakdown.js";
+import { renderDiagnosticsSummary } from "./components/DiagnosticsSummary.js";
+import { renderPerformanceInsights } from "./components/PerformanceInsights.js";
+import { renderStrategyNote } from "./components/StrategyNote.js";
 
 export function renderInitialUI() {
   const root = document.querySelector("#app");
@@ -36,3 +46,6 @@ export function renderInitialUI() {
   `;
 }
 
+export function renderResults(url, metrics, opportunities, strategy) {
+  // ...copy the renderResults logic from main.jsx here...
+}
