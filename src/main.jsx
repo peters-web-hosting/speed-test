@@ -253,115 +253,92 @@ function switchStrategy(newStrategy) {
 }
 
 // --- History storage helpers ---
-
-// --- Redis-backed history helpers ---
-async function _getHistoryById(id) {
-  const res = await fetch(`/api/history?id=${encodeURIComponent(id)}`);
-  if (!res.ok) return null;
-  const { data } = await res.json();
-  return data;
+function _readHistory() {
+  try {
+    return JSON.parse(localStorage.getItem("speedtest_history") || "{}");
+  } catch (e) {
+    return {};
+  }
 }
 
-async function _saveTestResult(url, metrics, opportunities, strategy) {
-  // Use a deterministic id for the same url (for sharing)
+function _writeHistory(obj) {
+  localStorage.setItem("speedtest_history", JSON.stringify(obj));
+}
+
+function _findEntryByUrl(url) {
+  const h = _readHistory();
+  return Object.values(h).find((e) => e.url === url) || null;
+}
+
+function _saveTestResult(url, metrics, opportunities, strategy) {
+  const history = _readHistory();
+  // try find existing entry by url
+  let entry = Object.values(history).find((e) => e.url === url);
   const now = Date.now();
-  const id = `${btoa(url).replace(/=+$/, "")}`;
-  // Try to get existing
-  let entry = await _getHistoryById(id);
   if (entry) {
     entry.results = entry.results || {};
     entry.results[strategy] = { metrics, opportunities, ts: now };
     entry.lastUpdated = now;
+    history[entry.id] = entry;
   } else {
-
-    if (!entry || !entry.results) {
-      resultsDiv.innerHTML = `<div class="bg-white rounded-lg p-6 shadow-sm">No history yet — run a test to save results.</div>`;
-      return;
-    }
-    const mobile = entry.results.mobile ? "✅" : "—";
-    const desktop = entry.results.desktop ? "✅" : "—";
-    const listHtml = `
-      <div class="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm mb-3">
-        <div>
-          <p class="text-sm font-medium">${entry.url}</p>
-          <p class="text-xs text-gray-500">Updated ${new Date(entry.lastUpdated).toLocaleString()}</p>
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="text-xs">Mobile ${mobile}</span>
-          <span class="text-xs">Desktop ${desktop}</span>
-          <button data-id="${entry.id}" class="viewBtn border px-3 py-1 rounded bg-orange-50 text-primary text-sm">View</button>
-          <button data-id="${entry.id}" class="copyLinkBtn border px-3 py-1 rounded text-sm">Copy link</button>
-        </div>
-      </div>`;
-
-    resultsDiv.innerHTML = `<div class="mb-4"><h3 class="text-lg font-bold mb-3">Test History</h3>${listHtml}</div>`;
-  return await _getHistoryById(id);
+    const id = `${now}-${btoa(url).replace(/=+$/, "")}`;
+    entry = {
+      id,
+      url,
+      created: now,
+      lastUpdated: now,
+      results: {
+        [strategy]: { metrics, opportunities, ts: now },
+      },
+    };
+    history[id] = entry;
+  }
+  _writeHistory(history);
+  return entry.id;
 }
 
-async function renderHistoryPanel() {
-  // For demo, only show the current url's history (since we don't have a global list in Redis)
-  const url = document.getElementById("url")?.value.trim();
-  if (!url) {
+function renderHistoryPanel() {
+  const history = _readHistory();
+  const items = Object.values(history).sort((a, b) => b.lastUpdated - a.lastUpdated);
+  if (items.length === 0) {
     resultsDiv.innerHTML = `<div class="bg-white rounded-lg p-6 shadow-sm">No history yet — run a test to save results.</div>`;
     return;
   }
-  const entry = await _findEntryByUrl(url);
-  if (!entry) {
-    resultsDiv.innerHTML = `<div class="bg-white rounded-lg p-6 shadow-sm">No history yet — run a test to save results.</div>`;
-    return;
-  }
-  const mobile = entry.results.mobile ? "✅" : "—";
-  const desktop = entry.results.desktop ? "✅" : "—";
-  const listHtml = `
-    <div class="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm mb-3">
-      <div>
-        <p class="text-sm font-medium">${entry.url}</p>
-        <p class="text-xs text-gray-500">Updated ${new Date(
-          entry.lastUpdated
-        ).toLocaleString()}</p>
-      </div>
-      <div class="flex items-center gap-2">
-        <span class="text-xs">Mobile ${mobile}</span>
-        <span class="text-xs">Desktop ${desktop}</span>
-        <button data-id="${
-          entry.id
-        }" class="viewBtn border px-3 py-1 rounded bg-orange-50 text-primary text-sm">View</button>
-        <button data-id="${
-          entry.id
-        }" class="copyLinkBtn border px-3 py-1 rounded text-sm">Copy link</button>
-      </div>
-    </div>`;
+  const listHtml = items
+    .map((it) => {
+      const mobile = it.results.mobile ? "✅" : "—";
+      const desktop = it.results.desktop ? "✅" : "—";
+      return `
+        <div class="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm mb-3">
+          <div>
+            <p class="text-sm font-medium">${it.url}</p>
+            <p class="text-xs text-gray-500">Updated ${new Date(it.lastUpdated).toLocaleString()}</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs">Mobile ${mobile}</span>
+            <span class="text-xs">Desktop ${desktop}</span>
+            <button data-id="${it.id}" class="viewBtn border px-3 py-1 rounded bg-orange-50 text-primary text-sm">View</button>
+            <button data-id="${it.id}" class="copyLinkBtn border px-3 py-1 rounded text-sm">Copy link</button>
+          </div>
+        </div>`;
+    })
+    .join("");
 
   resultsDiv.innerHTML = `<div class="mb-4"><h3 class="text-lg font-bold mb-3">Test History</h3>${listHtml}</div>`;
 
-
   document.querySelectorAll(".viewBtn").forEach((btn) => {
-    btn.addEventListener("click", async () => {
+    btn.addEventListener("click", () => {
       const id = btn.getAttribute("data-id");
-      const entry = await _getHistoryById(id);
-      if (!entry || !entry.results) {
-        alert("No results found for this entry (may have expired or been deleted).");
-        return;
-      }
+      const history = _readHistory();
+      const entry = history[id];
+      if (!entry) return;
+      // prefer to show mobile if available
       const strat = entry.results.mobile ? "mobile" : "desktop";
-      if (!entry.results[strat]) {
-        alert("No results found for this strategy.");
-        return;
-      }
       const { metrics, opportunities } = entry.results[strat];
+      // load into testResults and render
       testResults = {};
-      if (entry.results.mobile)
-        testResults.mobile = {
-          url: entry.url,
-          metrics: entry.results.mobile.metrics,
-          opportunities: entry.results.mobile.opportunities,
-        };
-      if (entry.results.desktop)
-        testResults.desktop = {
-          url: entry.url,
-          metrics: entry.results.desktop.metrics,
-          opportunities: entry.results.desktop.opportunities,
-        };
+      if (entry.results.mobile) testResults.mobile = { url: entry.url, metrics: entry.results.mobile.metrics, opportunities: entry.results.mobile.opportunities };
+      if (entry.results.desktop) testResults.desktop = { url: entry.url, metrics: entry.results.desktop.metrics, opportunities: entry.results.desktop.opportunities };
       renderResults(entry.url, metrics, opportunities, strat);
     });
   });
@@ -369,8 +346,16 @@ async function renderHistoryPanel() {
   document.querySelectorAll(".copyLinkBtn").forEach((btn) => {
     btn.addEventListener("click", async () => {
       const id = btn.getAttribute("data-id");
-      const url = new URL(location.href);
-      url.searchParams.set("resultId", id);
+      const history = _readHistory();
+      const entry = history[id];
+      if (!entry) return;
+      // Prefer mobile if available, else desktop
+      const strat = entry.results.mobile ? "mobile" : "desktop";
+      const urlParam = encodeURIComponent(entry.url);
+      const url = new URL(location.origin + location.pathname);
+      url.searchParams.set("url", entry.url);
+      url.searchParams.set("strategy", strat);
+      url.searchParams.set("autorun", "1");
       try {
         await navigator.clipboard.writeText(url.toString());
         btn.textContent = "Copied";
@@ -382,36 +367,28 @@ async function renderHistoryPanel() {
   });
 }
 
-async function loadSharedResultFromURL() {
+function loadSharedResultFromURL() {
   const params = new URLSearchParams(location.search);
   const id = params.get("resultId");
   if (!id) return false;
-  const entry = await _getHistoryById(id);
+  const history = _readHistory();
+  const entry = history[id];
   if (!entry) return false;
+  // choose mobile if available, else desktop
   const strat = entry.results.mobile ? "mobile" : "desktop";
   const { metrics, opportunities } = entry.results[strat];
   testResults = {};
-  if (entry.results.mobile)
-    testResults.mobile = {
-      url: entry.url,
-      metrics: entry.results.mobile.metrics,
-      opportunities: entry.results.mobile.opportunities,
-    };
-  if (entry.results.desktop)
-    testResults.desktop = {
-      url: entry.url,
-      metrics: entry.results.desktop.metrics,
-      opportunities: entry.results.desktop.opportunities,
-    };
+  if (entry.results.mobile) testResults.mobile = { url: entry.url, metrics: entry.results.mobile.metrics, opportunities: entry.results.mobile.opportunities };
+  if (entry.results.desktop) testResults.desktop = { url: entry.url, metrics: entry.results.desktop.metrics, opportunities: entry.results.desktop.opportunities };
   renderResults(entry.url, metrics, opportunities, strat);
   return true;
 }
 
-// Show a side-by-side comparison if both strategies available for the same URL
 
-async function showCompareForCurrentUrl(url, previousStrategy = "mobile") {
-  const entry = await _findEntryByUrl(url);
-  if (!entry || !entry.results) {
+// Show a side-by-side comparison if both strategies available for the same URL
+function showCompareForCurrentUrl(url, previousStrategy = "mobile") {
+  const entry = _findEntryByUrl(url);
+  if (!entry) {
     alert("No saved results to compare for this URL.");
     return;
   }
@@ -452,8 +429,7 @@ async function showCompareForCurrentUrl(url, previousStrategy = "mobile") {
   if (closeBtn) {
     closeBtn.addEventListener("click", () => {
       // prefer the provided previousStrategy, fallback to mobile
-      const strat =
-        previousStrategy || (entry.results.mobile ? "mobile" : "desktop");
+      const strat = previousStrategy || (entry.results.mobile ? "mobile" : "desktop");
       const res = entry.results[strat];
       if (!res) {
         // if the requested strategy isn't available, pick any available
@@ -527,14 +503,13 @@ function renderResults(url, metrics, opportunities, strategy) {
   const desktopBtn = document.getElementById("switchDesktopBtn");
 
   // attach export and compare handlers
-
+ 
   const compareBtn = document.getElementById("compareBtn");
   const historyBtn = document.getElementById("historyBtn");
 
-  if (compareBtn)
-    compareBtn.addEventListener("click", () => showCompareForCurrentUrl(url));
-  if (historyBtn)
-    historyBtn.addEventListener("click", () => renderHistoryPanel());
+ 
+  if (compareBtn) compareBtn.addEventListener("click", () => showCompareForCurrentUrl(url));
+  if (historyBtn) historyBtn.addEventListener("click", () => renderHistoryPanel());
 
   if (mobileBtn) {
     mobileBtn.addEventListener("click", () => switchStrategy("mobile"));
@@ -550,4 +525,30 @@ function renderResults(url, metrics, opportunities, strategy) {
 }
 
 // On load, if a shared resultId is present, load it
-loadSharedResultFromURL();
+
+// Auto-run test if url, strategy, and autorun=1 are present in query params
+function tryAutoRunFromQuery() {
+  const params = new URLSearchParams(location.search);
+  const url = params.get("url");
+  const strategy = params.get("strategy") || "mobile";
+  const autorun = params.get("autorun");
+  if (url && autorun === "1") {
+    // Fill form fields
+    const urlInput = document.getElementById("url");
+    const stratInput = document.getElementById("strategy");
+    if (urlInput) urlInput.value = url;
+    if (stratInput) stratInput.value = strategy;
+    // Submit the form programmatically
+    setTimeout(() => {
+      document.getElementById("runTestBtn")?.click();
+    }, 300);
+    return true;
+  }
+  return false;
+}
+
+if (!loadSharedResultFromURL()) {
+  if (!tryAutoRunFromQuery()) {
+    // no shared result or autorun; optionally render history on initial page
+  }
+}
