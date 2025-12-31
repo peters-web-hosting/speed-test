@@ -13,19 +13,13 @@ async function ensureTable() {
   )`;
 }
 
-
 export async function setHistory(id, data) {
   await ensureTable();
-  // Add created timestamp if not present
-  if (!data.created) data.created = Date.now();
   await sql`
     INSERT INTO history (id, data)
     VALUES (${id}, ${JSON.stringify(data)})
     ON CONFLICT (id) DO UPDATE SET data = EXCLUDED.data
   `;
-  // Cleanup: delete entries older than 7 days
-  const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
-  await sql`DELETE FROM history WHERE (data->>'created')::bigint < ${sevenDaysAgo}`;
 }
 
 export async function getHistory(id) {
