@@ -5,17 +5,17 @@ const versionFile = path.join(__dirname, "../version.json");
 const pkgFile = path.join(__dirname, "../package.json");
 
 function getNewVersion(oldVersion) {
-  // Simple patch bump: 1.2.3 -> 1.2.4
-  //const parts = oldVersion.split(".").map(Number);
-  //parts[2] = (parts[2] || 0) + 1;
-  //return parts.join(".");
-  newVersion = oldVersion++;
+  const num = parseInt(oldVersion, 10);
+  if (isNaN(num) || num < 1) {
+    return "1";
+  }
+  return String(num + 1);
 }
 
 function updateVersion() {
-  let pkg = { version: "1.0.0" };
+  let pkg = { version: "1" };
   let versionData = {
-    version: "1.0.0",
+    version: "1",
     buildDate: new Date().toISOString().slice(0, 10),
   };
 
