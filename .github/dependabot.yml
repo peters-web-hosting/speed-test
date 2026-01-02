@@ -1,0 +1,8 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/" # The root of the project
+    schedule:
+      interval: "daily"  # Set to daily updates
+    commit-message:
+      prefix: "chore"
