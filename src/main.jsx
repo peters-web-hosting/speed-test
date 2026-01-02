@@ -1,6 +1,7 @@
 import "./style.css";
 
 // Import utilities
+
 import {
   validateApiKey,
   fetchPageSpeedData,
@@ -8,12 +9,28 @@ import {
   extractOpportunities,
 } from "./utils/api.js";
 
+import {
+  scoreColor,
+  metricColor,
+  formatTime,
+  formatBytes,
+  metricCard,
+} from "./utils/formatters.js";
+
 // Import components
 import {
   renderForm,
   renderLoadingState,
   performanceTips,
 } from "./components/Form.js";
+
+import {
+  readHistory,
+  writeHistory,
+  findEntryByUrl,
+  saveTestResult,
+  loadSharedResultFromURL,
+} from "./utils/history.js";
 import { renderResultsHeader } from "./components/ResultsHeader.js";
 import { renderScoresOverview } from "./components/ScoresOverview.js";
 import { renderCoreWebVitals } from "./components/CoreWebVitals.js";
@@ -137,49 +154,6 @@ form.addEventListener("submit", async (e) => {
   }
 });
 
-function scoreColor(value, good = 90, ok = 50) {
-  if (value >= good) return "bg-green-100 text-green-700";
-  if (value >= ok) return "bg-amber-100 text-amber-700";
-  return "bg-red-100 text-red-700";
-}
-
-function metricColor(value, good, ok) {
-  if (value <= good) return "bg-green-100 text-green-700";
-  if (value <= ok) return "bg-amber-100 text-amber-700";
-  return "bg-red-100 text-red-700";
-}
-
-function formatTime(ms) {
-  if (ms < 1000) return Math.round(ms) + " ms";
-  return (ms / 1000).toFixed(1) + " s";
-}
-
-function formatBytes(bytes) {
-  if (!bytes) return "0 B";
-  if (bytes < 1024) return bytes + " B";
-  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
-  return (bytes / (1024 * 1024)).toFixed(1) + " MB";
-}
-
-function metricCard(title, value, explanation, colorClass, icon = "") {
-  return `
-    <div class="bg-white p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-      <div class="inline-block px-2 py-1 rounded-full text-xs font-medium mb-2 ${colorClass}">
-        ${
-          colorClass.includes("green")
-            ? "Good"
-            : colorClass.includes("amber")
-            ? "Needs improvement"
-            : "Poor"
-        }
-      </div>
-      <p class="text-sm text-slate-500">${title}</p>
-      <p class="text-2xl font-bold">${value}</p>
-      <p class="text-xs text-slate-600 mt-1">${explanation}</p>
-    </div>
-  `;
-}
-
 function scoreRing(score, label) {
   // Use hex colors instead of any modern CSS color formats
   const color = score >= 90 ? "#10b981" : score >= 50 ? "#f59e0b" : "#ef4444";
@@ -255,51 +229,6 @@ function switchStrategy(newStrategy) {
     const { url, metrics, opportunities } = testResults[newStrategy];
     renderResults(url, metrics, opportunities, newStrategy);
   }
-}
-
-// --- History storage helpers ---
-function _readHistory() {
-  try {
-    return JSON.parse(localStorage.getItem("speedtest_history") || "{}");
-  } catch (e) {
-    return {};
-  }
-}
-
-function _writeHistory(obj) {
-  localStorage.setItem("speedtest_history", JSON.stringify(obj));
-}
-
-function _findEntryByUrl(url) {
-  const h = _readHistory();
-  return Object.values(h).find((e) => e.url === url) || null;
-}
-
-function _saveTestResult(url, metrics, opportunities, strategy) {
-  const history = _readHistory();
-  // try find existing entry by url
-  let entry = Object.values(history).find((e) => e.url === url);
-  const now = Date.now();
-  if (entry) {
-    entry.results = entry.results || {};
-    entry.results[strategy] = { metrics, opportunities, ts: now };
-    entry.lastUpdated = now;
-    history[entry.id] = entry;
-  } else {
-    const id = `${now}-${btoa(url).replace(/=+$/, "")}`;
-    entry = {
-      id,
-      url,
-      created: now,
-      lastUpdated: now,
-      results: {
-        [strategy]: { metrics, opportunities, ts: now },
-      },
-    };
-    history[id] = entry;
-  }
-  _writeHistory(history);
-  return entry.id;
 }
 
 function renderHistoryPanel() {
@@ -389,32 +318,6 @@ function renderHistoryPanel() {
   });
 }
 
-function loadSharedResultFromURL() {
-  const params = new URLSearchParams(location.search);
-  const id = params.get("resultId");
-  if (!id) return false;
-  const history = _readHistory();
-  const entry = history[id];
-  if (!entry) return false;
-  // choose mobile if available, else desktop
-  const strat = entry.results.mobile ? "mobile" : "desktop";
-  const { metrics, opportunities } = entry.results[strat];
-  testResults = {};
-  if (entry.results.mobile)
-    testResults.mobile = {
-      url: entry.url,
-      metrics: entry.results.mobile.metrics,
-      opportunities: entry.results.mobile.opportunities,
-    };
-  if (entry.results.desktop)
-    testResults.desktop = {
-      url: entry.url,
-      metrics: entry.results.desktop.metrics,
-      opportunities: entry.results.desktop.opportunities,
-    };
-  renderResults(entry.url, metrics, opportunities, strat);
-  return true;
-}
 
 // Show a side-by-side comparison if both strategies available for the same URL
 function showCompareForCurrentUrl(url, previousStrategy = "mobile") {
