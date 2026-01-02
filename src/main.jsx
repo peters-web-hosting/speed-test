@@ -232,7 +232,7 @@ function switchStrategy(newStrategy) {
 }
 
 function renderHistoryPanel() {
-  const history = _readHistory();
+  const history = readHistory();
   const items = Object.values(history).sort(
     (a, b) => b.lastUpdated - a.lastUpdated
   );
@@ -271,7 +271,7 @@ function renderHistoryPanel() {
   document.querySelectorAll(".viewBtn").forEach((btn) => {
     btn.addEventListener("click", () => {
       const id = btn.getAttribute("data-id");
-      const history = _readHistory();
+      const history = readHistory();
       const entry = history[id];
       if (!entry) return;
       // prefer to show mobile if available
@@ -298,7 +298,7 @@ function renderHistoryPanel() {
   document.querySelectorAll(".copyLinkBtn").forEach((btn) => {
     btn.addEventListener("click", async () => {
       const id = btn.getAttribute("data-id");
-      const history = _readHistory();
+      const history = readHistory();
       const entry = history[id];
       if (!entry) return;
       // Prefer mobile if available, else desktop
@@ -321,7 +321,7 @@ function renderHistoryPanel() {
 
 // Show a side-by-side comparison if both strategies available for the same URL
 function showCompareForCurrentUrl(url, previousStrategy = "mobile") {
-  const entry = _findEntryByUrl(url);
+  const entry = findEntryByUrl(url);
   if (!entry) {
     alert("No saved results to compare for this URL.");
     return;

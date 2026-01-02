@@ -16,7 +16,14 @@ import { renderDiagnosticsSummary } from "./DiagnosticsSummary.js";
 import { renderPerformanceInsights } from "./PerformanceInsights.js";
 import { renderStrategyNote } from "./StrategyNote.js";
 
-export function renderResults(resultsDiv, url, metrics, opportunities, strategy, categories) {
+export function renderResults(
+  resultsDiv,
+  url,
+  metrics,
+  opportunities,
+  strategy,
+  categories
+) {
   // Hide loading spinner
   const loading = document.getElementById("loading");
   if (loading) loading.classList.add("hidden");
@@ -33,10 +40,14 @@ export function renderResults(resultsDiv, url, metrics, opportunities, strategy,
     ? renderPerformanceInsights(metrics.performance)
     : "";
   const scores = renderScoresOverview(metrics, categories);
-  const metricsData = `<div id=\"metricsData\" class=\"hidden\" data-metrics='${JSON.stringify(metrics)}'></div>`;
+  const metricsData = `<div id=\"metricsData\" class=\"hidden\" data-metrics='${JSON.stringify(
+    metrics
+  )}'></div>`;
   const opportunitiesData =
     opportunities.length > 0
-      ? `<div id=\"opportunities\" class=\"hidden\" data-opportunities='${JSON.stringify(opportunities)}'></div>`
+      ? `<div id=\"opportunities\" class=\"hidden\" data-opportunities='${JSON.stringify(
+          opportunities
+        )}'></div>`
       : "";
   const coreWebVitals = categories.includes("performance")
     ? renderCoreWebVitals(metrics)
@@ -98,19 +109,37 @@ export function renderResults(resultsDiv, url, metrics, opportunities, strategy,
 
   // These handlers may need to be customized to your app's state management
   if (compareBtn)
-    compareBtn.addEventListener("click", () => window.showCompareForCurrentUrl && window.showCompareForCurrentUrl(url));
+    compareBtn.addEventListener(
+      "click",
+      () =>
+        window.showCompareForCurrentUrl && window.showCompareForCurrentUrl(url)
+    );
   if (historyBtn)
-    historyBtn.addEventListener("click", () => window.renderHistoryPanel && window.renderHistoryPanel());
+    historyBtn.addEventListener(
+      "click",
+      () => window.renderHistoryPanel && window.renderHistoryPanel()
+    );
 
   if (mobileBtn) {
-    mobileBtn.addEventListener("click", () => window.switchStrategy && window.switchStrategy("mobile"));
+    mobileBtn.addEventListener(
+      "click",
+      () => window.switchStrategy && window.switchStrategy("mobile")
+    );
   }
   if (desktopBtn) {
-    desktopBtn.addEventListener("click", () => window.switchStrategy && window.switchStrategy("desktop"));
+    desktopBtn.addEventListener(
+      "click",
+      () => window.switchStrategy && window.switchStrategy("desktop")
+    );
   }
 }
 
-export function showCompareForCurrentUrl(resultsDiv, url, testResults, previousStrategy = "mobile") {
+export function showCompareForCurrentUrl(
+  resultsDiv,
+  url,
+  testResults,
+  previousStrategy = "mobile"
+) {
   const entry = testResults || null;
   if (!entry) {
     alert("No saved results to compare for this URL.");
