@@ -31,7 +31,7 @@ import {
   saveTestResult,
   loadSharedResultFromURL,
 } from "./utils/history.js";
-import { renderResultsHeader } from "./components/ResultsHeader.js";
+import { renderResultsHeader } from "./components/ResultsHeader.jsx";
 import { renderScoresOverview } from "./components/ScoresOverview.js";
 import { renderCoreWebVitals } from "./components/CoreWebVitals.js";
 import { renderPerformanceMetrics } from "./components/PerformanceMetrics.js";
@@ -47,6 +47,7 @@ import { renderResourceBreakdown } from "./components/ResourceBreakdown.js";
 import { renderDiagnosticsSummary } from "./components/DiagnosticsSummary.js";
 import { renderPerformanceInsights } from "./components/PerformanceInsights.js";
 import { renderStrategyNote } from "./components/StrategyNote.js";
+import { getVersionInfo } from "./utils/version.js";
 
 // Root container
 const root = document.querySelector("#app");
@@ -135,6 +136,14 @@ form.addEventListener("submit", async (e) => {
     testResults[strategy] = { url, metrics, opportunities, categories };
 
     renderResults(url, metrics, opportunities, strategy, categories);
+
+    // Fetch and display version info
+    getVersionInfo().then((info) => {
+      const versionDiv = document.getElementById("versionInfo");
+      if (versionDiv) {
+        versionDiv.textContent = `Version: ${info.version} | Built: ${info.buildDate}`;
+      }
+    });
 
     // Clear tip rotation interval when results are displayed
     if (tipInterval) {
@@ -317,7 +326,6 @@ function renderHistoryPanel() {
     });
   });
 }
-
 
 // Show a side-by-side comparison if both strategies available for the same URL
 function showCompareForCurrentUrl(url, previousStrategy = "mobile") {
