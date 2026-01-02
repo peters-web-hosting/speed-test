@@ -10,7 +10,9 @@
     "generate-og": "node scripts/convert-og.js"
   },
   "devDependencies": {
-    "vite": "^7.2.4"
+    "@cloudflare/vite-plugin": "^1.17.1",
+    "vite": "^7.3.0",
+    "wrangler": "^4.54.0"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.18",
