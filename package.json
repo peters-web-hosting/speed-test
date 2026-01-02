@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "prebuild": "node scripts/update-version.cjs",
+    "prebuild": "node scripts/update-version.cjs && node scripts/copy-version.cjs",
     "build": "npm run prebuild && vite build",
     "preview": "vite preview",
     "generate-og": "node scripts/convert-og.js"
