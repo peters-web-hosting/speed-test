@@ -6,14 +6,18 @@ const pkgFile = path.join(__dirname, "../package.json");
 
 function getNewVersion(oldVersion) {
   // Simple patch bump: 1.2.3 -> 1.2.4
-  const parts = oldVersion.split(".").map(Number);
-  parts[2] = (parts[2] || 0) + 1;
-  return parts.join(".");
+  //const parts = oldVersion.split(".").map(Number);
+  //parts[2] = (parts[2] || 0) + 1;
+  //return parts.join(".");
+  newVersion = oldVersion++;
 }
 
 function updateVersion() {
   let pkg = { version: "1.0.0" };
-  let versionData = { version: "1.0.0", buildDate: new Date().toISOString() };
+  let versionData = {
+    version: "1.0.0",
+    buildDate: new Date().toISOString().slice(0, 10),
+  };
 
   if (fs.existsSync(pkgFile)) {
     pkg = JSON.parse(fs.readFileSync(pkgFile, "utf8"));
@@ -25,7 +29,7 @@ function updateVersion() {
   const newVersion = getNewVersion(pkg.version || versionData.version);
   pkg.version = newVersion;
   versionData.version = newVersion;
-  versionData.buildDate = new Date().toISOString();
+  versionData.buildDate = new Date().toISOString().slice(0, 10);
 
   fs.writeFileSync(pkgFile, JSON.stringify(pkg, null, 2));
   fs.writeFileSync(versionFile, JSON.stringify(versionData, null, 2));
