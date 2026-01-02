@@ -62,4 +62,3 @@ export function renderResultsHeader(url, strategy) {
     </div>
   `;
 }
-}

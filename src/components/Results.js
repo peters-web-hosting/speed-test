@@ -1,5 +1,5 @@
 // Results rendering logic for speed-test
-import { renderResultsHeader } from "./ResultsHeader.js";
+import { renderResultsHeader } from "./ResultsHeader.jsx";
 import { renderScoresOverview } from "./ScoresOverview.js";
 import { renderCoreWebVitals } from "./CoreWebVitals.js";
 import { renderPerformanceMetrics } from "./PerformanceMetrics.js";
