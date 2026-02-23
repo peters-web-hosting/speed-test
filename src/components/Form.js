@@ -29,54 +29,59 @@ function getRandomTip() {
 
 export function renderForm() {
   return `
-    <form id="testForm" role="form" aria-label="Website performance test form" aria-describedby="formHelp" class="bg-white rounded-xl shadow-lg p-8 space-y-6 border border-orange-100">
-      <div class="mb-2">
-        <h2 class="text-2xl font-bold text-accent">Test Your Website Performance</h2>
-        <p class="text-gray-600 text-sm mt-1">Enter your website URL, select a device type, and choose which categories to analyze</p>
+    <form id="testForm" role="form" aria-label="Website performance test form" aria-describedby="formHelp" class="bg-white/95 backdrop-blur rounded-2xl shadow-xl p-5 sm:p-8 space-y-6 border border-orange-100">
+      <div class="mb-2 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h2 class="text-2xl font-bold text-accent">Test Your Website Performance</h2>
+          <p class="text-gray-600 text-sm mt-1">Enter your website URL, select a device type, and choose which categories to analyze</p>
+        </div>
+        <div class="text-xs text-gray-600 bg-orange-50 border border-orange-100 rounded-lg px-3 py-2">
+          Typical runtime: <span class="font-semibold text-accent">15-30s</span>
+        </div>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
         <label class="block">
           <span class="text-sm font-semibold text-accent">Website URL</span>
           <input id="url" type="url" required placeholder="https://example.com"
-                 aria-label="Website URL to test" class="mt-2 w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none transition-all"/>
+                 aria-label="Website URL to test" class="mt-2 w-full rounded-xl border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none transition-all shadow-sm"/>
         </label>
         <label class="block">
           <span class="text-sm font-semibold text-accent">Test Device</span>
-          <select id="strategy" aria-label="Test device type" class="mt-2 w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none transition-all bg-white cursor-pointer">
+          <select id="strategy" aria-label="Test device type" class="mt-2 w-full rounded-xl border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none transition-all bg-white cursor-pointer shadow-sm">
             <option value="mobile">📱 Mobile</option>
             <option value="desktop">💻 Desktop</option>
           </select>
         </label>
       </div>
-      <fieldset class="mt-4">
+      <fieldset class="mt-4 rounded-xl border border-gray-200 p-4 bg-gray-50/70">
         <legend class="text-sm font-semibold text-accent mb-2">Categories to Test</legend>
-        <div class="flex flex-wrap gap-4">
-          <label class="flex items-center gap-2">
+        <div class="flex flex-wrap gap-3">
+          <label class="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm">
             <input type="checkbox" id="cat-performance" name="categories" value="performance" checked />
             Performance
           </label>
-          <label class="flex items-center gap-2">
+          <label class="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm">
             <input type="checkbox" id="cat-accessibility" name="categories" value="accessibility" checked />
             Accessibility
           </label>
-          <label class="flex items-center gap-2">
+          <label class="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm">
             <input type="checkbox" id="cat-best-practices" name="categories" value="best-practices" checked />
             Best Practices
           </label>
-          <label class="flex items-center gap-2">
+          <label class="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm">
             <input type="checkbox" id="cat-seo" name="categories" value="seo" checked />
             SEO
           </label>
         </div>
       </fieldset>
-      <button id="runTestBtn" type="submit" aria-label="Run performance test" class="w-full bg-primary hover:bg-orange-500 text-black px-8 py-4 rounded-lg transition-all font-semibold text-lg shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary mt-4">
+      <button id="runTestBtn" type="submit" aria-label="Run performance test" class="w-full bg-primary hover:bg-orange-500 text-black px-8 py-4 rounded-xl transition-all font-semibold text-lg shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary mt-4">
         🚀 Run Performance Test
       </button>
       <p id="formHelp" class="sr-only">Enter the full URL including https://, choose a device type, and select categories, then press Run Performance Test to start the audit.</p>
-      <div class="flex items-center justify-around pt-4 border-t border-gray-200 text-xs text-gray-600">
-        <div class="flex items-center gap-2">✔️ <span>Instant Results</span></div>
-        <div class="flex items-center gap-2">✔️ <span>Comprehensive Analysis</span></div>
-        <div class="flex items-center gap-2">✔️ <span>Free & Fast</span></div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-4 border-t border-gray-200 text-xs text-gray-600">
+        <div class="flex items-center justify-center gap-2 rounded-lg bg-gray-50 py-2">✔️ <span>Detailed Results</span></div>
+        <div class="flex items-center justify-center gap-2 rounded-lg bg-gray-50 py-2">✔️ <span>Comprehensive Analysis</span></div>
+        <div class="flex items-center justify-center gap-2 rounded-lg bg-gray-50 py-2">✔️ <span>Free & Fast</span></div>
       </div>
       <div class="text-center mt-3 text-xs text-gray-500">
         This tool is provided by <a href="https://petersweb.me.uk" class="text-primary hover:underline">PetersWeb</a>.
