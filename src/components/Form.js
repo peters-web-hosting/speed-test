@@ -79,7 +79,7 @@ export function renderForm() {
       </button>
       <p id="formHelp" class="sr-only">Enter the full URL including https://, choose a device type, and select categories, then press Run Performance Test to start the audit.</p>
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-4 border-t border-gray-200 text-xs text-gray-600">
-        <div class="flex items-center justify-center gap-2 rounded-lg bg-gray-50 py-2">✔️ <span>Instant Results</span></div>
+        <div class="flex items-center justify-center gap-2 rounded-lg bg-gray-50 py-2">✔️ <span>Detailed Results</span></div>
         <div class="flex items-center justify-center gap-2 rounded-lg bg-gray-50 py-2">✔️ <span>Comprehensive Analysis</span></div>
         <div class="flex items-center justify-center gap-2 rounded-lg bg-gray-50 py-2">✔️ <span>Free & Fast</span></div>
       </div>
