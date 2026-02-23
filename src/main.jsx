@@ -53,24 +53,29 @@ import { getVersionInfo } from "./utils/version.js";
 const root = document.querySelector("#app");
 
 root.innerHTML = `
-  <main role="main" aria-labelledby="pageTitle" class="min-h-screen bg-white">
-    <div class="max-w-6xl mx-auto px-6 py-12">
-      <div class="text-center mb-12">
-        <div class="inline-block bg-orange-50 px-4 py-2 rounded-full text-sm font-semibold text-primary mb-4">
+  <main role="main" aria-labelledby="pageTitle" class="min-h-screen bg-gradient-to-b from-orange-50 via-white to-white text-slate-900">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
+      <div class="text-center mb-10 sm:mb-12">
+        <div class="inline-block bg-white/80 backdrop-blur px-4 py-2 rounded-full text-sm font-semibold text-primary mb-4 border border-orange-100 shadow-sm">
           ⚡ Website Performance Analyzer
         </div>
-        <h1 id="pageTitle" class="text-5xl md:text-6xl font-bold text-accent mb-4">
+        <h1 id="pageTitle" class="text-4xl md:text-6xl font-bold text-accent mb-4 leading-tight">
           Speed Test & Performance Insights
         </h1>
-        <p class="text-xl text-gray-700 max-w-3xl mx-auto">
+        <p class="text-lg sm:text-xl text-gray-700 max-w-3xl mx-auto">
           Analyze your website performance with detailed metrics and actionable recommendations powered by Google PageSpeed Insights.
         </p>
+        <div class="mt-6 flex flex-wrap items-center justify-center gap-3 text-xs sm:text-sm text-gray-700">
+          <span class="px-3 py-1 rounded-full bg-white border border-gray-200 shadow-sm">Core Web Vitals</span>
+          <span class="px-3 py-1 rounded-full bg-white border border-gray-200 shadow-sm">Accessibility Checks</span>
+          <span class="px-3 py-1 rounded-full bg-white border border-gray-200 shadow-sm">SEO & Best Practices</span>
+        </div>
       </div>
 
       ${renderForm()}
       ${renderLoadingState()}
 
-      <div id="results" class="mt-16" aria-live="polite"></div>
+      <div id="results" class="mt-14 sm:mt-16" aria-live="polite"></div>
     </div>
   </main>
 `;
