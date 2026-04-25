@@ -16,7 +16,7 @@
     "wrangler": "^4.69.0"
   },
   "dependencies": {
-    "@tailwindcss/vite": "^4.2.1",
+    "@tailwindcss/vite": "^4.2.2",
     "tailwindcss": "^4.2.1"
   }
 }
