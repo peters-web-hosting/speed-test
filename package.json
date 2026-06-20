@@ -11,9 +11,9 @@
     "generate-og": "node scripts/convert-og.js"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^1.28.0",
+    "@cloudflare/vite-plugin": "^1.42.1",
     "vite": "^7.3.2",
-    "wrangler": "^4.69.0"
+    "wrangler": "^4.103.0"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.1",
